@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LIFE DASH – 生活管理ミニアプリ</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><text y='0.9em' font-size='200'>🌴</text></svg>">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#00bcd4">
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app" class="page">
+    <header class="topbar">
+      <h1 class="brand"><span class="sun">☀️</span> LIFE DASH <span class="spark">✨</span></h1>
+      <div class="top-actions">
+        <label class="date-pick">
+          <input id="dateInput" type="date" />
+        </label>
+        <button id="todayBtn" class="btn ghost">今日</button>
+        <button id="exportBtn" class="btn primary">エクスポート</button>
+        <label class="btn ghost file-wrap">
+          インポート
+          <input id="importFile" type="file" accept="application/json" />
+        </label>
+        <button id="themeToggle" class="btn ghost">Tropic: ON</button>
+      </div>
+    </header>
+
+    <div id="praise" class="praise" hidden></div>
+
+    <section class="card">
+      <div class="card-title">今のミッション（閲覧専用）</div>
+      <div class="grid grid-2">
+        <div class="card-ghost">
+          <div class="row-between mb-8">
+            <div class="fw600">🗓 今月の目標</div>
+            <span class="badge" id="monthKeyBadge"></span>
+          </div>
+          <div class="goal-text" id="monthGoal"></div>
+        </div>
+        <div class="card-ghost">
+          <div class="row-between mb-8">
+            <div class="fw600">🎯 今週の仕事の目標</div>
+            <span class="muted" id="weekRange"></span>
+          </div>
+          <div class="goal-text" id="weekGoal"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="today">今日の入力</button>
+      <button class="tab" data-tab="list">一覧</button>
+      <button class="tab" data-tab="calendar">カレンダー</button>
+      <button class="tab" data-tab="stats">7日サマリ</button>
+      <button class="tab" data-tab="settings">設定</button>
+    </nav>
+
+    <main>
+      <section id="tab-today" class="tabpane active">
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">体重／食事カロリー</div>
+            <div class="form-row">
+              <label>体重(kg)</label>
+              <input id="weightKg" type="number" min="0" step="0.1" />
+            </div>
+            <div class="divider"></div>
+            <div class="grid grid-2">
+              <label>朝</label><input id="calBreakfast" type="number" min="0" />
+              <label>昼</label><input id="calLunch" type="number" min="0" />
+              <label>夜</label><input id="calDinner" type="number" min="0" />
+              <label>おやつ</label><input id="calSnack" type="number" min="0" />
+            </div>
+            <div class="muted mt-8">合計：<span class="badge" id="calTotal">0 kcal</span></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">習慣</div>
+            <div id="habitMain" class="vstack gap-8">
+              <!-- main habits -->
+            </div>
+            <div class="divider mt-12"></div>
+            <div class="muted mb-8 mt-8">おまけ</div>
+            <div id="habitOmake" class="vstack gap-8"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">数値入力</div>
+            <div class="form-row">
+              <label>勉強時間(分)</label>
+              <input id="studyMin" type="number" min="0" />
+            </div>
+            <div class="form-row">
+              <label>睡眠(時間)</label>
+              <input id="sleepHours" type="number" min="0" step="0.5" />
+            </div>
+            <div class="form-row">
+              <label>昼寝(分)</label>
+              <input id="napMin" type="number" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">タスク</div>
+          <div class="row gap-8">
+            <input id="taskInput" class="grow" placeholder="タスクを入力して追加" />
+            <button id="taskAdd" class="btn primary">追加</button>
+          </div>
+          <div id="taskList" class="vstack gap-8 mt-12"></div>
+        </div>
+
+        <div class="row end mt-16">
+          <button class="btn primary">保存（自動）</button>
+        </div>
+      </section>
+
+      <section id="tab-list" class="tabpane">
+        <div id="listView" class="vstack gap-12"></div>
+      </section>
+
+      <section id="tab-calendar" class="tabpane">
+        <div class="card">
+          <div class="row-between">
+            <div class="row gap-8">
+              <button id="calPrev" class="btn ghost">◀</button>
+              <div id="calYm" class="fw600"></div>
+              <button id="calNext" class="btn ghost">▶</button>
+            </div>
+            <div id="legend" class="legend"></div>
+          </div>
+          <div id="calGrid" class="cal-grid"></div>
+        </div>
+        <div id="calDetail"></div>
+      </section>
+
+      <section id="tab-stats" class="tabpane">
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">直近7日 勉強</div>
+            <div id="sumStudy" class="h1"></div>
+            <div class="muted mt-8" id="sumStudyDesc"></div>
+            <div class="progress mt-12"><div id="studyBar" class="bar" style="width:0%"></div></div>
+            <div class="muted mt-8" id="studyTarget"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">直近7日 習慣の実施日数</div>
+            <div id="habitStats" class="vstack gap-8"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">平均など</div>
+            <div class="muted">平均カロリー：<span id="avgCal"></span></div>
+            <div class="muted mt-8">平均体重：<span id="avgWeight"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-settings" class="tabpane">
+        <div class="card">
+          <div class="card-title">ミッション編集（今週・今月）</div>
+          <div class="grid grid-2">
+            <div>
+              <div class="muted mb-8" id="monthLabel"></div>
+              <textarea id="monthEdit" rows="6"></textarea>
+            </div>
+            <div>
+              <div class="muted mb-8" id="weekLabel"></div>
+              <textarea id="weekEdit" rows="6"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">表示する習慣と色</div>
+          <div id="settingsHabits" class="vstack gap-8"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">週あたりの学習目標（分）</div>
+          <div class="row gap-8">
+            <input id="weeklyTarget" type="number" min="0" />
+            <div class="muted">7日サマリの進捗バーに反映</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">テーマ</div>
+          <div class="row gap-8">
+            <button id="themeToggle2" class="btn ghost">Tropic: ON</button>
+            <div class="muted">南国／Dope を切替</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">ローカル保存：データはこの端末のブラウザに保存されます（JSONの入出力対応）</footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
